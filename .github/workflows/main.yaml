@@ -21,7 +21,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         push: true
-        file: ./docker-compose/Dockerfile
+        file: ./docker-compose/php/Dockerfile
         tags: ${{ vars.DOCKERHUB_USERNAME }}/laravel:latest
 
 
