@@ -1,0 +1,36 @@
+version: "4"
+services:
+  #application service
+  php:
+    build:
+      dockerfile: Dockerfile
+    image: laravel-demo
+    container_name: laravel-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./src:/var/www
+    networks:
+      - laravel
+  
+  #web server service
+  nginx:
+    image: nginx:alpine
+    container_name: laravel-nginx
+    restart: unless-stopped
+    ports:
+      - 81:80
+    volumes:
+      - ./src:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - laravel
+    depends_on:
+      - php
+
+#network settings
+networks:
+  laravel:
+    driver: bridge
+
+
