@@ -8,7 +8,10 @@ services:
     working_dir: /var/www/
     volumes:
       - ./src:/var/www
-    command: php artisan optimize
+    command: 
+      - php artisan optimize
+      - php artisan migrate
+    
     networks:
       - laravel
   
