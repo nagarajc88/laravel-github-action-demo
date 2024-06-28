@@ -4,17 +4,30 @@ services:
   php:
     image: nagarajc/laravel:latest
     container_name: laravel-app
-    restart: unless-stopped
     working_dir: /var/www/
     volumes:
       - ./src:/var/www
-    command: 
-      - php artisan optimize
-      - php artisan migrate
-    
     networks:
       - laravel
-  
+    ports:
+      - "9000:9000"
+
+  artisan:
+    image: nagarajc/laravel:latest
+    container_name: laravel-artisan
+    working_dir: /var/www/
+    volumes:
+      - ./src:/var/www
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+          php artisan migrate
+          php artisan optimize
+    depends_on:
+      - php
+    networks:
+      - laravel
+
   #web server service
   nginx:
     image: nginx:alpine
@@ -34,5 +47,3 @@ services:
 networks:
   laravel:
     driver: bridge
-
-
