@@ -1,5 +1,6 @@
 version: "3"
 services:
+
   #application service
   php:
     image: nagarajc/laravel:latest
@@ -12,12 +13,29 @@ services:
     ports:
       - "9000:9000"
 
+  #Database migration service
+  composer:
+    image: nagarajc/laravel:latest
+    container_name: laravel-composer-install
+    working_dir: /var/www/
+    volumes:
+      - ./src:/var/www:delegated
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+          composer install
+    depends_on:
+      - php
+    networks:
+      - laravel
+
+  #Database migration service
   artisan:
     image: nagarajc/laravel:latest
     container_name: laravel-artisan
     working_dir: /var/www/
     volumes:
-      - ./src:/var/www
+      - ./src:/var/www:delegated
     entrypoint: ["/bin/bash", "-c"]
     command: 
       - |
@@ -25,13 +43,17 @@ services:
           php artisan optimize
     depends_on:
       - php
+      - composer
     networks:
       - laravel
+
+  
 
   #web server service
   nginx:
     image: nginx:alpine
     container_name: laravel-nginx
+    working_dir: /var/www/
     restart: unless-stopped
     ports:
       - 8000:80
@@ -47,3 +69,4 @@ services:
 networks:
   laravel:
     driver: bridge
+
